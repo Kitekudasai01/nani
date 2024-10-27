@@ -1,10 +1,10 @@
 <template> 
-    <registration-form></registration-form> 
+    <bank></bank>
     </template> 
     <script> 
-    import RegistrationForm from './Registration/RegistrationForm.vue';
+   import Bank from './Bankist/Bank.vue';
     export default { 
-    name: 'HomeView', 
+    name: 'Bank', 
     components: { 
     RegistrationForm, 
     }, 
