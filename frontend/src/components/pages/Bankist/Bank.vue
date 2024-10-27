@@ -6,11 +6,12 @@
         <img src="../../../assets/sub_logo.png" alt="Logo" class="logo" />
         <h2 class="title">BANKQUEEN</h2>
         <p class="welcome">Log in to get started</p>
-        <form class="login">
+        <form class="login" >
           <input
             type="text"
             placeholder="user"
             class="login__input login__input--user"
+            v-model="usernameData"
           />
           <!-- In practice, use type="password" -->
           <input
@@ -18,15 +19,17 @@
             placeholder="PIN"
             maxlength="4"
             class="login__input login__input--pin"
+            v-model="passwordData"
           />
-          <button class="login__btn">&rarr;</button>
+          <button class="login__btn" @click="loginFunction">&rarr;</button>
         </form>
       </b-container>
    </div>
    <!--main bankist section-->
-   <div  class="app">
+   <div  class="app" v-if="mainAccount">
      <div class="balance">
         <div>
+          <p class="welcome"></p>
           <p class="balance__label">Current balance</p>
           <p class="balance__date">
             As of <span class="date">05/03/2037</span>
@@ -109,10 +112,11 @@
 
 <script>
 export default{
-    name: 'Bank',
-    components: {},
+  name: 'Bank',
+  data(){
+    return{}
+  }
 }
-
 </script>
 
 <style scoped>
@@ -123,9 +127,9 @@ export default{
 .login-section{
   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   padding: 15px;
-  width: 50%;
-  margin-top: 15%;
-  margin-left: 25%;
+  width: 100%;
+  /* margin-top: 15%;
+  margin-left: 10%; */
   background: rgb(84,11,14);
   background: linear-gradient(90deg, rgba(84,11,14,1) 0%, rgba(120,0,0,1) 35%, rgba(158,42,43,1) 100%);
 }
@@ -187,9 +191,6 @@ export default{
   grid-template-rows: auto repeat(3, 15rem) auto;
   gap: 2rem;
   
-  
-  
-
   /* NOTE This creates the fade in/out anumation */
    /* opacity: 0;
   transition: all 1s;  */
