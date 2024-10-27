@@ -1,12 +1,14 @@
-<template> 
+<template>
     <bank></bank>
-    </template> 
-    <script> 
-   import Bank from './Bankist/Bank.vue';
-    export default { 
-    name: 'Bank', 
-    components: { 
-    RegistrationForm, 
-    }, 
-    }; 
-    </script>
+</template>
+
+<script>
+import Bank from './Bankist/Bank.vue';
+export default {
+    name:'Homeview',
+    components: {Bank}
+}
+</script>
+
+
+
