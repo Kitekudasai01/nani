@@ -1,0 +1,100 @@
+<template>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form @submit.prevent="loginUser">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
+      <button type="submit" :disabled="isLoading">Login</button>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    </form>
+    <p>Don't have an account? <router-link to="/register">Create one</router-link></p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      isLoading: false,
+      errorMessage: ''
+    };
+  },
+  methods: {
+    loginUser() {
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      // Simulate checking credentials from localStorage
+      const user = JSON.parse(localStorage.getItem('users')) || [];
+
+      const foundUser = user.find(
+        (u) => u.username === this.username && u.password === this.password
+      );
+
+      if (foundUser) {
+        // Successful login: you can set a flag, like a JWT token or session info
+        localStorage.setItem('authToken', 'some-jwt-token');
+        this.$router.push('/dashboard'); // Redirect to the dashboard
+      } else {
+        this.errorMessage = 'Invalid username or password';
+      }
+
+      this.isLoading = false;
+    }
+  }
+};
+</script>
+
+<style scoped>
+.login-container {
+  width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+</style>
