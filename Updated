@@ -1,0 +1,163 @@
+
+
+<template>
+  <div class="auth-container">
+    <!-- Login Form -->
+    <div v-if="isLoginForm && !isLoggedIn" class="form-container">
+      <h2>Login</h2>
+      <form @submit.prevent="loginUser">
+        <div>
+          <label for="loginEmail">Email</label>
+          <input type="email" v-model="email" id="loginEmail" required />
+        </div>
+        <div>
+          <label for="loginPassword">Password</label>
+          <input type="password" v-model="password" id="loginPassword" required />
+        </div>
+        <button type="submit">Login</button>
+        <p @click="toggleForm">Don't have an account? Register here</p>
+      </form>
+    </div>
+
+    <!-- Registration Form -->
+    <div v-if="!isLoginForm && !isLoggedIn" class="form-container">
+      <h2>Register</h2>
+      <form @submit.prevent="registerUser">
+        <div>
+          <label for="registerEmail">Email</label>
+          <input type="email" v-model="email" id="registerEmail" required />
+        </div>
+        <div>
+          <label for="registerPassword">Password</label>
+          <input type="password" v-model="password" id="registerPassword" required />
+        </div>
+        <button type="submit">Register</button>
+        <p @click="toggleForm">Already have an account? Login here</p>
+      </form>
+    </div>
+
+    <!-- User Dashboard with Update Options -->
+    <div v-if="isLoggedIn" class="user-dashboard">
+      <h3>Welcome, {{ email }}</h3>
+      <button @click="showUpdateForm = true">Update</button>
+      <button @click="logout">Logout</button>
+
+      <!-- Update Form (Change Password / Delete Account) -->
+      <div v-if="showUpdateForm" class="update-form">
+        <h3>Update Account</h3>
+        <button @click="changePassword">Change Password</button>
+        <button @click="deleteAccount">Delete Account</button>
+        <button @click="showUpdateForm = false">Cancel</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      email: '',
+      password: '',
+      isLoginForm: true, // Flag to toggle between login and register
+      isLoggedIn: false, // Track if user is logged in
+      showUpdateForm: false, // Toggle update form visibility
+      currentUserEmail: null, // Current logged-in user's email
+    };
+  },
+  methods: {
+    // Toggle between Login and Register form
+    toggleForm() {
+      this.isLoginForm = !this.isLoginForm;
+    },
+
+    // Handle Login logic (you can replace this with actual API calls)
+    loginUser() {
+      if (this.email === 'user@example.com' && this.password === 'password') {
+        this.isLoggedIn = true;
+        this.currentUserEmail = this.email;
+        alert('Login successful!');
+      } else {
+        alert('Invalid credentials!');
+      }
+    },
+
+    // Handle Registration logic (you can replace this with actual API calls)
+    registerUser() {
+      alert(`Registered with: ${this.email}`);
+      this.isLoggedIn = true;
+      this.currentUserEmail = this.email;
+    },
+
+    // Show the form to change the password
+    changePassword() {
+      const newPassword = prompt('Enter your new password:');
+      if (newPassword) {
+        alert('Password changed successfully!');
+        // Here you would send the new password to the backend to update it
+      }
+    },
+
+    // Handle Account Deletion (with confirmation)
+    deleteAccount() {
+      const confirmDelete = confirm('Are you sure you want to delete your account? This action is irreversible.');
+      if (confirmDelete) {
+        this.isLoggedIn = false;
+        this.email = '';
+        this.password = '';
+        this.currentUserEmail = null;
+        alert('Account deleted successfully.');
+      }
+    },
+
+    // Logout User
+    logout() {
+      this.isLoggedIn = false;
+      this.email = '';
+      this.password = '';
+      this.currentUserEmail = null;
+    },
+  },
+};
+</script>
+
+<style scoped>
+.auth-container {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.form-container, .user-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+p {
+  text-align: center;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.update-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+</style>
