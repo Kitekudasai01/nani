@@ -1,0 +1,93 @@
+import { shallowMount } from '@vue/test-utils';
+import Todolist from '@/components/Todolist.vue'; // Adjust the import path as necessary
+
+describe('Todolist.vue', () => {
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = shallowMount(Todolist);
+  });
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
+  it('should gather data correctly', () => {
+    const data = { value: 'New Task' };
+    wrapper.vm.gatherData(data);
+    expect(wrapper.vm.todoAdd).toBe('New Task');
+    expect(wrapper.vm.resetValue).toBe(1);
+  });
+
+  it('should alert when gathering empty data', () => {
+    jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const data = { value: '' };
+    wrapper.vm.gatherData(data);
+    expect(window.alert).toHaveBeenCalledWith('Please enter to do');
+    window.alert.mockRestore();
+  });
+
+  it('should add data to the addedTask array', () => {
+    wrapper.vm.todoAdd = 'Test Task';
+    wrapper.vm.addData();
+    expect(wrapper.vm.addedTask).toEqual([{ taskName: 'Test Task', isDone: false }]);
+    expect(wrapper.vm.todoAdd).toBe('');
+  });
+
+  it('should alert when adding empty task', () => {
+    jest.spyOn(window, 'alert').mockImplementation(() => {});
+    wrapper.vm.addData();
+    expect(window.alert).toHaveBeenCalledWith('Please enter to do list');
+    window.alert.mockRestore();
+  });
+
+  it('should delete all tasks', () => {
+    wrapper.vm.addedTask = [{ taskName: 'Task 1', isDone: false }, { taskName: 'Task 2', isDone: true }];
+    wrapper.vm.deleteAllFunc();
+    expect(wrapper.vm.addedTask).toEqual([]);
+  });
+
+  it('should remove a current task', () => {
+    jest.spyOn(window, 'confirm').mockImplementation(() => true);
+    wrapper.vm.addedTask = [{ taskName: 'Task 1', isDone: false }];
+    wrapper.vm.removeCurrentTask(0);
+    expect(wrapper.vm.addedTask).toEqual([]);
+    window.confirm.mockRestore();
+  });
+
+  it('should not remove a current task if cancelled', () => {
+    jest.spyOn(window, 'confirm').mockImplementation(() => false);
+    wrapper.vm.addedTask = [{ taskName: 'Task 1', isDone: false }];
+    wrapper.vm.removeCurrentTask(0);
+    expect(wrapper.vm.addedTask).toEqual([{ taskName: 'Task 1', isDone: false }]);
+    window.confirm.mockRestore();
+  });
+
+  it('should toggle task done status', () => {
+    wrapper.vm.addedTask = [{ taskName: 'Task 1', isDone: false }];
+    wrapper.vm.buttonFunction('clickDone', wrapper.vm.addedTask, 0);
+    expect(wrapper.vm.addedTask[0].isDone).toBe(true);
+    wrapper.vm.buttonFunction('clickDone', wrapper.vm.addedTask, 0);
+    expect(wrapper.vm.addedTask[0].isDone).toBe(false);
+  });
+
+  it('should clear completed tasks', () => {
+    wrapper.vm.addedTask = [
+      { taskName: 'Task 1', isDone: false },
+      { taskName: 'Task 2', isDone: true }
+    ];
+    wrapper.vm.clearCompleted();
+    expect(wrapper.vm.addedTask).toEqual([{ taskName: 'Task 1', isDone: false }]);
+  });
+
+  it('should alert when clearing completed tasks', () => {
+    jest.spyOn(window, 'confirm').mockImplementation(() => true);
+    wrapper.vm.addedTask = [
+      { taskName: 'Task 1', isDone: false },
+      { taskName: 'Task 2', isDone: true }
+    ];
+    wrapper.vm.clearCompleted();
+    expect(wrapper.vm.addedTask).toEqual([{ taskName: 'Task 1', isDone: false }]);
+    window.confirm.mockRestore();
+  });
+});
