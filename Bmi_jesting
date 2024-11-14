@@ -1,0 +1,57 @@
+import { shallowMount } from '@vue/test-utils';
+import BmiBase from '@/components/BmiBase.vue'; // Adjust the import path as necessary
+
+describe('BmiBase.vue', () => {
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = shallowMount(BmiBase);
+  });
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
+  it('should gather data correctly for bmiOne', () => {
+    const data = { key: 'name', value: 'John' };
+    wrapper.vm.gatherData(data, 1);
+    expect(wrapper.vm.bmiData.bmiOne.name).toBe('John');
+  });
+
+  it('should gather data correctly for bmiTwo', () => {
+    const data = { key: 'name', value: 'Doe' };
+    wrapper.vm.gatherData(data, 2);
+    expect(wrapper.vm.bmiData.bmiTwo.name).toBe('Doe');
+  });
+
+  it('should compute BMI for bmiOne correctly', () => {
+    wrapper.vm.bmiData.bmiOne = { weight: 70, height: 175 }; // 70 kg, 175 cm
+    wrapper.vm.computeBmiOne();
+    expect(wrapper.vm.result).toBe('Normal');
+    expect(wrapper.vm.computation1).toBe('22.86'); // BMI calculation
+  });
+
+  it('should compute BMI for bmiTwo correctly', () => {
+    wrapper.vm.bmiData.bmiTwo = { weight: 85, height: 180 }; // 85 kg, 180 cm
+    wrapper.vm.computeBmiTwo();
+    expect(wrapper.vm.result).toBe('Overweight');
+    expect(wrapper.vm.computation2).toBe('26.23'); // BMI calculation
+  });
+
+  it('should reset data correctly', () => {
+    wrapper.vm.bmiData.bmiOne = { name: 'John', weight: 70, height: 175 };
+    wrapper.vm.bmiData.bmiTwo = { name: 'Doe', weight: 85, height: 180 };
+    wrapper.vm.resetDataFunction();
+    expect(wrapper.vm.bmiData.bmiOne.name).toBe('');
+    expect(wrapper.vm.bmiData.bmiTwo.name).toBe('');
+    expect(wrapper.vm.resetDataButton).toBe(1); // Incremented after reset
+  });
+
+  it('should show alert when inputs are invalid', () => {
+    jest.spyOn(window, 'alert').mockImplementation(() => {});
+    wrapper.vm.bmiData.bmiOne = { name: '@John', weight: 70, height: 175 };
+    wrapper.vm.validationForm();
+    expect(window.alert).toHaveBeenCalledWith('Input invalid no special charactert');
+    window.alert.mockRestore();
+  });
+});
