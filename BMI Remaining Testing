@@ -1,0 +1,96 @@
+describe('btnFunction', () => {
+    let component;
+    component = new YourComponent(); // Initialize your component here
+    component.bmiData = {
+      bmiOne: { name: 'John' },
+      bmiTwo: { name: 'Jane' },
+    };
+
+  test('should call resetDataFunction when operation is clickReset', () => {
+    const btn = { event: { operation: 'clickReset' } };
+    const resetSpy = jest.spyOn(component, 'resetDataFunction');
+    component.btnFunction(btn);
+    expect(resetSpy).toHaveBeenCalled();
+  });
+
+  test('should call validationForm and computeBmi functions when operation is clickCompute and no error', () => {
+    const btn = { event: { operation: 'clickCompute' } };
+    component.isError = false;
+    const validationSpy = jest.spyOn(component, 'validationForm');
+    const computeBmiOneSpy = jest.spyOn(component, 'computeBmiOne');
+    const computeBmiTwoSpy = jest.spyOn(component, 'computeBmiTwo');
+    component.btnFunction(btn);
+    expect(validationSpy).toHaveBeenCalled();
+    expect(computeBmiOneSpy).toHaveBeenCalled();
+    expect(computeBmiTwoSpy).toHaveBeenCalled();
+  });
+
+  test('should not call compute functions if there is an error in clickCompute', () => {
+    const btn = { event: { operation: 'clickCompute' } };
+    component.isError = true;
+    const computeBmiOneSpy = jest.spyOn(component, 'computeBmiOne');
+    const computeBmiTwoSpy = jest.spyOn(component, 'computeBmiTwo');
+    component.btnFunction(btn);
+    expect(computeBmiOneSpy).not.toHaveBeenCalled();
+    expect(computeBmiTwoSpy).not.toHaveBeenCalled();
+  });
+
+  test('should alert when result is empty', () => {
+    const btn = { event: { operation: 'clickCompute' } };
+    component.result = '';
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    component.btnFunction(btn);
+    expect(alertSpy).toHaveBeenCalledWith('Please input data to proceed');
+  });
+
+  test('should set isCompared, showDismissibleAlert, and compareShow to true on clickCompare', () => {
+    const btn = { event: { operation: 'clickCompare' } };
+    component.result = 'some result';
+    component.btnFunction(btn);
+    expect(component.isCompared).toBe(true);
+    expect(component.showDismissibleAlert).toBe(true);
+    expect(component.compareShow).toBe(true);
+  });
+
+  test('should return if result is empty in clickCompare', () => {
+    const btn = { event: { operation: 'clickCompare' } };
+    component.result = '';
+    const returnSpy = jest.fn();
+    component.btnFunction(btn);
+    expect(returnSpy).not.toHaveBeenCalled();
+  });
+test('should return equal BMI message when computation1 equals computation2', () => {
+    component.computation1 = 25;
+    component.computation2 = 25;
+    const result = component.bmiShow();
+    expect(result).toBe('John is equal to BMI: Jane');
+  });
+
+  test('should return message with greater BMI for computation1 when computation1 is greater than computation2', () => {
+    component.computation1 = 30;
+    component.computation2 = 25;
+    const result = component.bmiShow();
+    expect(result).toBe('John has greater BMI: 30');
+  });
+
+  test('should return message with greater BMI for computation2 when computation2 is greater than computation1', () => {
+    component.computation1 = 20;
+    component.computation2 = 25;
+    const result = component.bmiShow();
+    expect(result).toBe('Jane has greater BMI: 25');
+  });
+
+  test('should handle the case when computation1 is greater than computation2 (reversed order)', () => {
+    component.computation1 = 40;
+    component.computation2 = 30;
+    const result = component.bmiShow();
+    expect(result).toBe('John has greater BMI: 40');
+  });
+
+  test('should handle the case when computation2 is greater than computation1 (reversed order)', () => {
+    component.computation1 = 18;
+    component.computation2 = 22;
+    const result = component.bmiShow();
+    expect(result).toBe('Jane has greater BMI: 22');
+  });
+});
