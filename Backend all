@@ -1,0 +1,96 @@
+from flask import Blueprint, request, jsonify
+from app import db
+from app.models import Puppy
+from app.schemas import PuppySchema
+
+puppies_bp = Blueprint('puppies', __name__)
+
+# Initialize schemas
+puppy_schema = PuppySchema()
+puppies_schema = PuppySchema(many=True)
+
+# Get all puppies
+@puppies_bp.route('/puppies', methods=['GET'])
+def get_puppies():
+    puppies = Puppy.query.all()
+    return puppies_schema.jsonify(puppies)
+
+# Get a single puppy by ID
+@puppies_bp.route('/puppy/<int:id>', methods=['GET'])
+def get_puppy(id):
+    puppy = Puppy.query.get(id)
+    if puppy is None:
+        return jsonify({'message': 'Puppy not found'}), 404
+    return puppy_schema.jsonify(puppy)
+
+# Create a new puppy
+@puppies_bp.route('/puppy', methods=['POST'])
+def add_puppy():
+    name = request.json['name']
+    breed = request.json['breed']
+    age = request.json['age']
+    new_puppy = Puppy(name=name, breed=breed, age=age)
+    db.session.add(new_puppy)
+    db.session.commit()
+    return puppy_schema.jsonify(new_puppy), 201
+
+# Adopt a puppy (update the 'adopted' status)
+@puppies_bp.route('/puppy/adopt/<int:id>', methods=['PUT'])
+def adopt_puppy(id):
+    puppy = Puppy.query.get(id)
+    if puppy is None:
+        return jsonify({'message': 'Puppy not found'}), 404
+    puppy.adopted = True
+    db.session.commit()
+    return puppy_schema.jsonify(puppy)
+
+# Get all adopted puppies
+@puppies_bp.route('/adopted', methods=['GET'])
+def get_adopted_puppies():
+    puppies = Puppy.query.filter_by(adopted=True).all()
+    return puppies_schema.jsonify(puppies)
+
+<template>
+  <div>
+    <h1>Puppy List</h1>
+    <b-table :items="puppies" :fields="fields">
+      <template #cell(adopted)="data">
+        <b-badge variant="success" v-if="data.value">Adopted</b-badge>
+        <b-badge variant="warning" v-else>Available</b-badge>
+      </template>
+      <template #cell(actions)="data">
+        <b-button @click="adoptPuppy(data.item.id)" variant="success" :disabled="data.item.adopted">
+          Adopt
+        </b-button>
+      </template>
+    </b-table>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      puppies: [],
+      fields: ['name', 'breed', 'age', 'adopted', 'actions']
+    }
+  },
+  mounted() {
+    this.fetchPuppies()
+  },
+  methods: {
+    async fetchPuppies() {
+      const response = await fetch('http://localhost:5000/api/puppies')
+      const data = await response.json()
+      this.puppies = data
+    },
+    async adoptPuppy(id) {
+      await fetch(`http://localhost:5000/api/puppy/adopt/${id}`, {
+        method: 'PUT'
+      })
+      this.fetchPuppies() // Refresh the list
+    }
+  }
+}
+</script>
+
