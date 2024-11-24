@@ -1,0 +1,118 @@
+<template>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <a href="/">MySite</a>
+      </div>
+      
+      <!-- Mobile Menu Icon -->
+      <div class="menu-icon" @click="toggleMenu">
+        <span v-if="!menuOpen">&#9776;</span> <!-- Hamburger icon -->
+        <span v-else>&times;</span> <!-- Close icon -->
+      </div>
+
+      <!-- Navbar Links -->
+      <ul class="nav-links" :class="{ 'active': menuOpen }">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+</template>
+
+<script>
+export default {
+  name: 'Navbar',
+  data() {
+    return {
+      menuOpen: false,  // Track the menu state (open or closed)
+    };
+  },
+  methods: {
+    toggleMenu() {
+      this.menuOpen = !this.menuOpen;  // Toggle menu visibility
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* Basic Styling */
+.navbar {
+  background-color: #333;
+  padding: 10px;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px 15px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  background-color: #444;
+}
+
+/* Mobile menu */
+.menu-icon {
+  display: none;
+  cursor: pointer;
+}
+
+/* Active menu on mobile */
+.nav-links.active {
+  display: block;
+  width: 100%;
+  background-color: #333;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+}
+
+.nav-links li {
+  width: 100%;
+  text-align: center;
+}
+
+.nav-links li a {
+  display: block;
+  padding: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .menu-icon {
+    display: block;
+    font-size: 30px;
+    color: white;
+  }
+}
+</style>
