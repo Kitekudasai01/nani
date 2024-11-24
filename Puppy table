@@ -1,0 +1,49 @@
+const { createApp, reactive } = Vue;
+
+const App = {
+  data() {
+    return {
+      pets: reactive([
+        { name: "Fluffy", birthday: "2019-03-15", age: 5, breed: "Golden Retriever" },
+        { name: "Mittens", birthday: "2020-07-20", age: 4, breed: "Tabby Cat" },
+        { name: "Rex", birthday: "2018-11-01", age: 6, breed: "German Shepherd" }
+      ])
+    };
+  },
+  methods: {
+    adopt(petName) {
+      alert(`You have adopted ${petName}!`);
+      // Optionally, you can remove the pet from the list after adoption
+      this.pets = this.pets.filter(pet => pet.name !== petName);
+    }
+  },
+  template: `
+    <div>
+      <h1>Adopt a Pet</h1>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Birthday</th>
+            <th>Age</th>
+            <th>Breed</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="pet in pets" :key="pet.name">
+            <td>{{ pet.name }}</td>
+            <td>{{ pet.birthday }}</td>
+            <td>{{ pet.age }}</td>
+            <td>{{ pet.breed }}</td>
+            <td>
+              <button @click="adopt(pet.name)">Adopt</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `
+};
+
+createApp(App).mount('#app');
