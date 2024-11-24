@@ -1,0 +1,97 @@
+<template>
+  <div id="app">
+    <button @click="showForm = !showForm">
+      {{ showForm ? 'Hide Adoption Form' : 'Show Adoption Form' }}
+    </button>
+
+    <!-- Display the form conditionally based on the showForm state -->
+    <div v-if="showForm" class="adoption-form">
+      <h2>Puppy Adoption Form</h2>
+      <form @submit.prevent="submitForm">
+        <div>
+          <label for="name">Your Name:</label>
+          <input type="text" v-model="formData.name" id="name" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" v-model="formData.email" id="email" required />
+        </div>
+        <div>
+          <label for="address">Address:</label>
+          <input type="text" v-model="formData.address" id="address" required />
+        </div>
+        <div>
+          <label for="puppy">Which puppy are you interested in?</label>
+          <input type="text" v-model="formData.puppy" id="puppy" required />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      showForm: false, // Controls whether the form is visible or not
+      formData: {
+        name: '',
+        email: '',
+        address: '',
+        puppy: ''
+      }
+    };
+  },
+  methods: {
+    submitForm() {
+      // Handle the form submission (you can add more logic here)
+      alert('Form submitted! \n' + JSON.stringify(this.formData, null, 2));
+      // Optionally, reset the form
+      this.formData = {
+        name: '',
+        email: '',
+        address: '',
+        puppy: ''
+      };
+      this.showForm = false; // Hide the form after submission
+    }
+  }
+};
+</script>
+
+<style scoped>
+.adoption-form {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+.adoption-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.adoption-form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.adoption-form button {
+  padding: 10px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.adoption-form button:hover {
+  background-color: #45a049;
+}
+</style>
