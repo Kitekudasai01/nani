@@ -1,0 +1,108 @@
+<template>
+  <header>
+    <nav class="navbar">
+      <div class="logo">My Logo</div>
+      <button v-if="isSmallScreen" class="hamburger" @click="toggleMenu">
+        &#9776; <!-- Hamburger icon -->
+      </button>
+      <ul v-bind:class="{ 'is-active': menuOpen }" class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+
+export default {
+  setup() {
+    const menuOpen = ref(false);
+    const isSmallScreen = ref(false);
+
+    const toggleMenu = () => {
+      menuOpen.value = !menuOpen.value;
+    };
+
+    const checkScreenSize = () => {
+      isSmallScreen.value = window.innerWidth <= 200;
+    };
+
+    onMounted(() => {
+      checkScreenSize();
+      window.addEventListener('resize', checkScreenSize);
+    });
+
+    return {
+      menuOpen,
+      toggleMenu,
+      isSmallScreen,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+}
+
+.navbar .logo {
+  color: white;
+  font-size: 24px;
+}
+
+.nav-links {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin: 0 15px;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+}
+
+.hamburger {
+  display: none;
+  font-size: 30px;
+  background: none;
+  border: none;
+  color: white;
+}
+
+.nav-links.is-active {
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+}
+
+@media (max-width: 200px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+  }
+
+  .nav-links.is-active {
+    display: block;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+</style>
