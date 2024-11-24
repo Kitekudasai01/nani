@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puppy Adoption</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.45"></script>
+</head>
+<body>
+    <div id="app">
+        <h2>Adoption Table</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Breed</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(puppy, index) in puppies" :key="puppy.id">
+                    <td>{{ puppy.name }}</td>
+                    <td>{{ puppy.breed }}</td>
+                    <td>
+                        <button @click="openAdoptionForm(puppy, index)">Adopt</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div v-if="showForm">
+            <h3>Adopt Puppy: {{ selectedPuppy.name }}</h3>
+            <form @submit.prevent="submitAdoption">
+                <label for="adopterName">Adopter's Name:</label>
+                <input type="text" v-model="adopterName" required>
+                <button type="submit">Submit Adoption</button>
+            </form>
+        </div>
+
+        <h2>Adopted Puppies</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Breed</th>
+                    <th>Adoption Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="adoptedPuppy in adoptedPuppies" :key="adoptedPuppy.id">
+                    <td>{{ adoptedPuppy.name }}</td>
+                    <td>{{ adoptedPuppy.breed }}</td>
+                    <td>{{ adoptedPuppy.adoptionDate }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    puppies: [
+                        { id: 1, name: 'Max', breed: 'Golden Retriever' },
+                        { id: 2, name: 'Bella', breed: 'Labrador' },
+                        { id: 3, name: 'Charlie', breed: 'Beagle' },
+                    ],
+                    adoptedPuppies: [],
+                    showForm: false,
+                    selectedPuppy: null,
+                    adopterName: ''
+                };
+            },
+            methods: {
+                openAdoptionForm(puppy, index) {
+                    this.selectedPuppy = puppy;
+                    this.selectedPuppy.index = index; // Save the index for later removal
+                    this.showForm = true;
+                },
+                submitAdoption() {
+                    // Create a new adopted puppy record
+                    const adoptedPuppy = {
+                        ...this.selectedPuppy,
+                        adoptionDate: new Date().toLocaleDateString(),
+                    };
+
+                    // Add the adopted puppy to the adopted puppies list
+                    this.adoptedPuppies.push(adoptedPuppy);
+
+                    // Remove the puppy from the available puppies list
+                    this.puppies.splice(this.selectedPuppy.index, 1);
+
+                    // Reset form and hide the form
+                    this.adopterName = '';
+                    this.showForm = false;
+                    this.selectedPuppy = null;
+                }
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
