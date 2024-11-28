@@ -1,0 +1,181 @@
+from flask import Flask
+from .config import Config
+from .models import db
+from .routes.student_routes import student_bp
+from flask_cors import CORS
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    db.init_app(app)
+    
+    # Enable CORS for frontend communication
+    CORS(app)
+    
+    # Register Blueprints
+    app.register_blueprint(student_bp)
+    
+    return app
+
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    date_of_birth = db.Column(db.Date, nullable=False)
+    enrolled = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<Student {self.first_name} {self.last_name}>'
+
+from flask import Blueprint, request, jsonify
+from app.models import db, Student
+from app.schemas import StudentSchema
+
+student_bp = Blueprint('students', __name__, url_prefix='/students')
+
+@student_bp.route('', methods=['POST'])
+def add_student():
+    data = request.get_json()
+    student_schema = StudentSchema()
+
+    # Validate input data
+    try:
+        student_data = student_schema.load(data)
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+
+    # Create new student
+    new_student = Student(**student_data)
+    db.session.add(new_student)
+    db.session.commit()
+
+    return student_schema.jsonify(new_student), 201
+
+@student_bp.route('', methods=['GET'])
+def get_students():
+    students = Student.query.all()
+    student_schema = StudentSchema(many=True)
+    return student_schema.jsonify(students)
+
+@student_bp.route('/<int:id>', methods=['GET'])
+def get_student(id):
+    student = Student.query.get_or_404(id)
+    student_schema = StudentSchema()
+    return student_schema.jsonify(student)
+
+
+from marshmallow import Schema, fields, validates, ValidationError
+from datetime import datetime
+
+class StudentSchema(Schema):
+    id = fields.Int(dump_only=True)
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    email = fields.Str(required=True)
+    date_of_birth = fields.Date(required=True)
+    enrolled = fields.Bool()
+
+    @validates('email')
+    def validate_email(self, value):
+        if '@' not in value:
+            raise ValidationError('Invalid email address')
+
+    @validates('date_of_birth')
+    def validate_dob(self, value):
+        if value >= datetime.now().date():
+            raise ValidationError('Date of birth cannot be in the future')
+<template>
+  <b-container>
+    <b-row>
+      <b-col>
+        <b-card title="Registered Students">
+          <b-table :items="students" :fields="fields" striped hover></b-table>
+        </b-card>
+      </b-col>
+    </b-row>
+  </b-container>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      students: [],
+      fields: ['id', 'first_name', 'last_name', 'email', 'date_of_birth', 'enrolled'],
+    };
+  },
+  mounted() {
+    this.getStudents();
+  },
+  methods: {
+    async getStudents() {
+      try {
+        const response = await this.$http.get('/students');
+        this.students = response.data;
+      } catch (error) {
+        console.error('Error fetching students:', error);
+        alert('Error fetching students');
+      }
+    },
+  },
+};
+</script>
+
+<template>
+  <b-container>
+    <b-row>
+      <b-col>
+        <b-card title="Register New Student">
+          <b-form @submit.prevent="submitForm">
+            <b-form-group label="First Name">
+              <b-form-input v-model="student.first_name" required></b-form-input>
+            </b-form-group>
+            <b-form-group label="Last Name">
+              <b-form-input v-model="student.last_name" required></b-form-input>
+            </b-form-group>
+            <b-form-group label="Email">
+              <b-form-input v-model="student.email" required type="email"></b-form-input>
+            </b-form-group>
+            <b-form-group label="Date of Birth">
+              <b-form-input v-model="student.date_of_birth" required type="date"></b-form-input>
+            </b-form-group>
+            <b-button type="submit" variant="primary">Submit</b-button>
+          </b-form>
+        </b-card>
+      </b-col>
+    </b-row>
+  </b-container>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      student: {
+        first_name: '',
+        last_name: '',
+        email: '',
+        date_of_birth: '',
+      },
+    };
+  },
+  methods: {
+    async submitForm() {
+      try {
+        const response = await this.$http.post('/students', this.student);
+        alert('Student Registered Successfully');
+        this.$router.push({ name: 'student-list' });  // Redirect to student list
+      } catch (error) {
+        console.error('Error registering student:', error);
+        alert('Error registering student');
+      }
+    },
+  },
+};
+</script>
+
