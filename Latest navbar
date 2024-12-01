@@ -1,0 +1,37 @@
+<template>
+  <b-navbar toggleable="lg" type="dark" variant="primary">
+    <b-navbar-brand href="#">MyApp</b-navbar-brand>
+    
+    <!-- Navbar Toggler for mobile responsiveness -->
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+    
+    <!-- Navbar Links -->
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item href="#">Home</b-nav-item>
+        <b-nav-item href="#">About</b-nav-item>
+        <b-nav-item href="#">Services</b-nav-item>
+        
+        <!-- Dropdown Menu -->
+        <b-nav-item-dropdown right>
+          <template #button-content>
+            Dropdown
+          </template>
+          <b-dropdown-item href="#">Action 1</b-dropdown-item>
+          <b-dropdown-item href="#">Action 2</b-dropdown-item>
+          <b-dropdown-item href="#">Action 3</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+</template>
+
+<script>
+export default {
+  name: 'Navbar'
+};
+</script>
+
+<style scoped>
+/* Customize any additional styles for your navbar here */
+</style>
