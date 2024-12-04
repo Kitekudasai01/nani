@@ -1,0 +1,94 @@
+import { mount } from '@vue/test-utils'
+import YourComponent from '@/path/to/YourComponent.vue'
+
+describe('YourComponent', () => {
+  
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = mount(YourComponent);
+  });
+
+  it('should have correct structure for input data', () => {
+    const inputs = wrapper.vm.inputsData;
+    
+    expect(inputs).toBeDefined();
+    expect(inputs).toHaveLength(4);
+
+    // Check first input structure (gender)
+    const firstInput = inputs[0];
+    expect(firstInput.componentName).toBe('commonTextInput');
+    expect(firstInput.data.saveAs).toBe('gender');
+    expect(firstInput.directives.type).toBe('text');
+    expect(firstInput.display.label).toBe('Gender:');
+
+    // Check second input structure (phone)
+    const secondInput = inputs[1];
+    expect(secondInput.componentName).toBe('commonTextInput');
+    expect(secondInput.data.saveAs).toBe('phone');
+    expect(secondInput.directives.type).toBe('tel');
+    expect(secondInput.display.label).toBe('Phone Number:');
+
+    // Check third input structure (level)
+    const thirdInput = inputs[2];
+    expect(thirdInput.componentName).toBe('commonTextInput');
+    expect(thirdInput.data.saveAs).toBe('level');
+    expect(thirdInput.directives.type).toBe('num');
+    expect(thirdInput.display.label).toBe('Level:');
+
+    // Check fourth input structure (acadyear)
+    const fourthInput = inputs[3];
+    expect(fourthInput.componentName).toBe('commonTextInput');
+    expect(fourthInput.data.saveAs).toBe('acadyear');
+    expect(fourthInput.directives.type).toBe('date');
+    expect(fourthInput.display.label).toBe('Academic Year:');
+  });
+
+  it('should log the correct message when registerButton is called', () => {
+    const studentData = {
+      firstname: 'John',
+      middlename: 'Doe',
+      lastname: 'Smith',
+      birthday: '1995-01-01',
+      gender: 'Male',
+      phone: '1234567890',
+      level: '10',
+      acadyear: '2024'
+    };
+
+    const consoleSpy = jest.spyOn(console, 'log');
+
+    wrapper.vm.registerButton(studentData);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Student Succesfully Added', studentData);
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should reset form data when willResetForm is called', () => {
+    // Set some data
+    wrapper.vm.studentData = {
+      firstname: 'John',
+      middlename: 'Doe',
+      lastname: 'Smith',
+      birthday: '1995-01-01',
+      gender: 'Male',
+      phone: '1234567890',
+      level: '10',
+      acadyear: '2024'
+    };
+
+    wrapper.vm.willResetForm();
+
+    // Ensure all fields are reset to empty strings
+    expect(wrapper.vm.studentData.firstname).toBe('');
+    expect(wrapper.vm.studentData.middlename).toBe('');
+    expect(wrapper.vm.studentData.lastname).toBe('');
+    expect(wrapper.vm.studentData.birthday).toBe('');
+    expect(wrapper.vm.studentData.gender).toBe('');
+    expect(wrapper.vm.studentData.phone).toBe('');
+    expect(wrapper.vm.studentData.level).toBe('');
+    expect(wrapper.vm.studentData.acadyear).toBe('');
+  });
+
+});
